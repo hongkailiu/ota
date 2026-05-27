@@ -49,7 +49,7 @@ func gatherOptions() options {
 
 	o.jira.AddFlags(fs)
 	fs.StringVar(&o.originDirectory, "origin-directory", "~/repo/openshift/origin", "Path to the origin repository directory")
-	fs.StringVar(&o.outputFormat, "output-format", "json", "output format")
+	fs.StringVar(&o.outputFormat, "output-format", "json", "output format. Either json or md")
 	fs.StringVar(&o.outputFile, "output-file", "-", "Output file path (use - for stdout)")
 
 	if err := fs.Parse(os.Args[1:]); err != nil {
