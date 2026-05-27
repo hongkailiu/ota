@@ -50,6 +50,27 @@ func expandPath(path string) (string, error) {
 	return filepath.Join(homeDir, path[1:]), nil
 }
 
+func readSourceFiles(baseDir string) ([]byte, error) {
+	file1Path := filepath.Join(baseDir, "pkg/monitortests/clusterversionoperator/legacycvomonitortests/operators.go")
+	file2Path := filepath.Join(baseDir, "test/extended/machines/scale.go")
+
+	content1, err := os.ReadFile(file1Path)
+	if err != nil {
+		return nil, err
+	}
+
+	content2, err := os.ReadFile(file2Path)
+	if err != nil {
+		return nil, err
+	}
+
+	// Combine both files with newline separator
+	combined := append(content1, '\n')
+	combined = append(combined, content2...)
+
+	return combined, nil
+}
+
 func main() {
 	o := gatherOptions()
 	if err := o.validate(); err != nil {
@@ -62,4 +83,11 @@ func main() {
 	}
 
 	logrus.Infof("Using origin directory: %s", expandedDir)
+
+	content, err := readSourceFiles(expandedDir)
+	if err != nil {
+		logrus.WithError(err).Fatal("cannot read source files")
+	}
+
+	logrus.Infof("Read %d bytes from source files", len(content))
 }
