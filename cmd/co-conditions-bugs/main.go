@@ -4,10 +4,12 @@ import (
 	"flag"
 	"os"
 	"path/filepath"
+	"reflect"
 	"regexp"
 
+	"github.com/andygrunwald/go-jira"
 	"github.com/sirupsen/logrus"
-	"sigs.k8s.io/prow/pkg/jira"
+	prowflagutil "sigs.k8s.io/prow/pkg/flagutil"
 
 	"github.com/petr-muller/ota/internal/flagutil"
 )
@@ -101,8 +103,27 @@ func parseJiraTickets(content []byte) []string {
 	return tickets
 }
 
-func fetchTicketInfo(jiraClient jira.Client, ticketID string) (*ticketInfo, error) {
-	issue, err := jiraClient.GetIssue(ticketID)
+func getFieldValue(opts *prowflagutil.JiraOptions, fieldName string) string {
+	val := reflect.ValueOf(opts).Elem()
+	field := val.FieldByName(fieldName)
+	if !field.IsValid() {
+		return ""
+	}
+
+	switch field.Kind() {
+	case reflect.String:
+		return field.String()
+	case reflect.Ptr:
+		if field.IsNil() {
+			return ""
+		}
+		return field.Elem().String()
+	}
+	return ""
+}
+
+func fetchTicketInfo(jiraClient *jira.Client, ticketID string) (*ticketInfo, error) {
+	issue, _, err := jiraClient.Issue.Get(ticketID, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -148,7 +169,46 @@ func main() {
 		return
 	}
 
-	jiraClient, err := o.jira.Client()
+	// Create go-jira client using basic auth
+	// First validate the options to ensure we have required credentials
+	_, err = o.jira.Client()
+	if err != nil {
+		logrus.WithError(err).Fatal("cannot validate Jira client options")
+	}
+
+	// Use reflection to extract credentials from prow's JiraOptions
+	var username, password, endpoint string
+	jiraOpts := &o.jira.JiraOptions
+
+	// Extract endpoint
+	endpointField := getFieldValue(jiraOpts, "endpoint")
+	if endpointField != "" {
+		endpoint = endpointField
+	} else {
+		endpoint = "https://redhat.atlassian.net"
+	}
+
+	// Extract username
+	username = getFieldValue(jiraOpts, "username")
+
+	// Extract password from file if specified
+	passwordFileRef := getFieldValue(jiraOpts, "passwordFile")
+	if passwordFileRef != "" {
+		passwordBytes, err := os.ReadFile(passwordFileRef)
+		if err != nil {
+			logrus.WithError(err).Fatal("cannot read password file")
+		}
+		password = string(passwordBytes)
+	}
+
+	// Create basic auth transport
+	tp := &jira.BasicAuthTransport{
+		Username: username,
+		Password: password,
+	}
+
+	// Create go-jira client
+	jiraClient, err := jira.NewClient(tp.Client(), endpoint)
 	if err != nil {
 		logrus.WithError(err).Fatal("cannot create Jira client")
 	}
