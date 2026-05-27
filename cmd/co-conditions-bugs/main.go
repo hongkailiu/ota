@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
+	"fmt"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -165,4 +167,11 @@ func main() {
 	}
 
 	logrus.Infof("Successfully fetched %d tickets", len(ticketInfos))
+
+	output, err := json.MarshalIndent(ticketInfos, "", "  ")
+	if err != nil {
+		logrus.WithError(err).Fatal("cannot marshal JSON output")
+	}
+
+	fmt.Println(string(output))
 }
