@@ -43,6 +43,7 @@ type ticketInfo struct {
 	Status     string `json:"status"`
 	Component  string `json:"component"`
 	Resolution string `json:"resolution"`
+	Assignee   string `json:"assignee"`
 	URL        string `json:"url"`
 	Notes      string `json:"notes"`
 }
@@ -160,6 +161,10 @@ func fetchTicketInfo(jiraClient jira.Client, ticketID string) (*ticketInfo, erro
 		info.Resolution = issue.Fields.Resolution.Name
 	}
 
+	if issue.Fields.Assignee != nil {
+		info.Assignee = issue.Fields.Assignee.DisplayName
+	}
+
 	return info, nil
 }
 
@@ -224,14 +229,15 @@ func main() {
 
 	case "md":
 		var buf strings.Builder
-		buf.WriteString("| # | Key | Summary | Status | Resolution | Component | Notes |\n")
-		buf.WriteString("|---|-----|---------|--------|------------|-----------|-------|\n")
+		buf.WriteString("| # | Key | Summary | Status | Resolution | Component | Assignee | Notes |\n")
+		buf.WriteString("|---|-----|---------|--------|------------|-----------|----------|-------|\n")
 		for _, ticket := range ticketInfos {
 			escapedSummary := strings.ReplaceAll(ticket.Summary, "|", "\\|")
 			escapedComponent := strings.ReplaceAll(ticket.Component, "|", "\\|")
 			escapedResolution := strings.ReplaceAll(ticket.Resolution, "|", "\\|")
+			escapedAssignee := strings.ReplaceAll(ticket.Assignee, "|", "\\|")
 			escapedNotes := strings.ReplaceAll(ticket.Notes, "|", "\\|")
-			buf.WriteString(fmt.Sprintf("| %d | [%s](%s) | %s | %s | %s | %s | %s |\n",
+			buf.WriteString(fmt.Sprintf("| %d | [%s](%s) | %s | %s | %s | %s | %s | %s |\n",
 				ticket.Number,
 				ticket.Key,
 				ticket.URL,
@@ -239,6 +245,7 @@ func main() {
 				ticket.Status,
 				escapedResolution,
 				escapedComponent,
+				escapedAssignee,
 				escapedNotes))
 		}
 		output = buf.String()
