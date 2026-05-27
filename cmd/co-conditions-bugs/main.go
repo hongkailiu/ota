@@ -47,7 +47,7 @@ func gatherOptions() options {
 	o.jira.AddFlags(fs)
 	fs.StringVar(&o.originDirectory, "origin-directory", "~/repo/openshift/origin", "Path to the origin repository directory")
 	fs.StringVar(&o.outputFormat, "output-format", "json", "output format")
-	fs.StringVar(&o.outputFile, "output-file", "/tmp/output.json", "output file")
+	fs.StringVar(&o.outputFile, "output-file", "-", "Output file path (use - for stdout)")
 
 	if err := fs.Parse(os.Args[1:]); err != nil {
 		logrus.WithError(err).Fatalf("cannot parse args: '%s'", os.Args[1:])
@@ -57,7 +57,15 @@ func gatherOptions() options {
 }
 
 func (o *options) validate() error {
-	return o.jira.Validate()
+	if err := o.jira.Validate(); err != nil {
+		return err
+	}
+
+	if o.outputFormat != "json" && o.outputFormat != "md" {
+		return fmt.Errorf("invalid output format %q, must be 'json' or 'md'", o.outputFormat)
+	}
+
+	return nil
 }
 
 func expandPath(path string) (string, error) {
