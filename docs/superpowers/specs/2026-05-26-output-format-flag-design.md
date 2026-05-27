@@ -79,10 +79,15 @@ case "md":
         escapedResolution := strings.ReplaceAll(ticket.Resolution, "|", "\\|")
         escapedAssignee := strings.ReplaceAll(ticket.Assignee, "|", "\\|")
         escapedNotes := strings.ReplaceAll(ticket.Notes, "|", "\\|")
-        buf.WriteString(fmt.Sprintf("| %d | [%s](%s) | %s | %s | %s | %s | %s | %s |\n",
+
+        keyField := fmt.Sprintf("[%s](%s)", ticket.Key, ticket.URL)
+        if strings.Contains(ticket.Notes, "Won't Do confirmed") {
+            keyField = fmt.Sprintf("~~%s~~", keyField)
+        }
+
+        buf.WriteString(fmt.Sprintf("| %d | %s | %s | %s | %s | %s | %s | %s |\n",
             ticket.Number,
-            ticket.Key,
-            ticket.URL,
+            keyField,
             escapedSummary,
             ticket.Status,
             escapedResolution,
@@ -114,13 +119,14 @@ The markdown output will be a standard GitHub-flavored markdown table with click
 | # | Key | Summary | Status | Resolution | Component | Assignee | Notes |
 |---|-----|---------|--------|------------|-----------|----------|-------|
 | 0 | [OCPBUGS-12345](https://redhat.atlassian.net/browse/OCPBUGS-12345) | Bug description | Open | Done | Component Name | John Doe | Note text |
-| 1 | [OCPBUGS-67890](https://redhat.atlassian.net/browse/OCPBUGS-67890) | Another bug | Closed | Won't Do | Other Component | Jane Smith |  |
+| 1 | ~~[OCPBUGS-67890](https://redhat.atlassian.net/browse/OCPBUGS-67890)~~ | Another bug | Closed | Won't Do | Other Component | Jane Smith | Won't Do confirmed |
 ```
 
 **Special character handling:**
 - Pipe characters (`|`) in ticket data will be escaped or replaced to avoid breaking the table format
 - Use `strings.ReplaceAll(field, "|", "\\|")` for each field value
 - Key column uses markdown link format: `[KEY](URL)` for clickable links to Jira tickets
+- When notes contain "Won't Do confirmed", the Key is wrapped in strikethrough: `~~[KEY](URL)~~`
 
 ### Error Handling
 
