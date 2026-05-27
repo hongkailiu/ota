@@ -195,10 +195,38 @@ func main() {
 
 	logrus.Infof("Successfully fetched %d tickets", len(ticketInfos))
 
-	output, err := json.MarshalIndent(ticketInfos, "", "  ")
-	if err != nil {
-		logrus.WithError(err).Fatal("cannot marshal JSON output")
+	var output string
+
+	switch o.outputFormat {
+	case "json":
+		jsonOutput, err := json.MarshalIndent(ticketInfos, "", "  ")
+		if err != nil {
+			logrus.WithError(err).Fatal("cannot marshal JSON output")
+		}
+		output = string(jsonOutput)
+
+	case "md":
+		var buf strings.Builder
+		buf.WriteString("| Key | Summary | Status | Component |\n")
+		buf.WriteString("|-----|---------|--------|-----------|\n")
+		for _, ticket := range ticketInfos {
+			escapedSummary := strings.ReplaceAll(ticket.Summary, "|", "\\|")
+			escapedComponent := strings.ReplaceAll(ticket.Component, "|", "\\|")
+			buf.WriteString(fmt.Sprintf("| %s | %s | %s | %s |\n",
+				ticket.Key,
+				escapedSummary,
+				ticket.Status,
+				escapedComponent))
+		}
+		output = buf.String()
 	}
 
-	fmt.Println(string(output))
+	if o.outputFile == "-" {
+		fmt.Print(output)
+	} else {
+		if err := os.WriteFile(o.outputFile, []byte(output), 0644); err != nil {
+			logrus.WithError(err).Fatalf("cannot write to file %s", o.outputFile)
+		}
+		logrus.Infof("Output written to %s", o.outputFile)
+	}
 }
