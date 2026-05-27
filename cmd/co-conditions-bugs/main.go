@@ -213,8 +213,9 @@ func main() {
 		for _, ticket := range ticketInfos {
 			escapedSummary := strings.ReplaceAll(ticket.Summary, "|", "\\|")
 			escapedComponent := strings.ReplaceAll(ticket.Component, "|", "\\|")
-			buf.WriteString(fmt.Sprintf("| %s | %s | %s | %s |\n",
+			buf.WriteString(fmt.Sprintf("| [%s](%s) | %s | %s | %s |\n",
 				ticket.Key,
+				ticket.URL,
 				escapedSummary,
 				ticket.Status,
 				escapedComponent))
