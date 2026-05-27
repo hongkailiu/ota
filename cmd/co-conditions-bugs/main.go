@@ -135,7 +135,6 @@ func parseJiraTickets(content []byte) []string {
 	return tickets
 }
 
-// TODO: commit output to GitHub
 var notes = map[string]string{
 	"OCPBUGS-22382": "Won't Do confirmed",
 	"OCPBUGS-23744": "Won't Do confirmed: OLMv0 in maintenance mode",
