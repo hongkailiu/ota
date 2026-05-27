@@ -19,6 +19,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strings"
 
 	"github.com/sirupsen/logrus"
 	"sigs.k8s.io/prow/pkg/jira"
@@ -38,6 +39,7 @@ type ticketInfo struct {
 	Summary   string `json:"summary"`
 	Status    string `json:"status"`
 	Component string `json:"component"`
+	URL       string `json:"url"`
 }
 
 func gatherOptions() options {
@@ -137,6 +139,7 @@ func fetchTicketInfo(jiraClient jira.Client, ticketID string) (*ticketInfo, erro
 		Key:     issue.Key,
 		Summary: issue.Fields.Summary,
 		Status:  issue.Fields.Status.Name,
+		URL:     strings.Split(issue.Self, "/rest/api")[0] + "/browse/" + issue.Key,
 	}
 
 	if len(issue.Fields.Components) > 0 {
