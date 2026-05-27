@@ -37,6 +37,7 @@ type options struct {
 }
 
 type ticketInfo struct {
+	Number     int    `json:"count"`
 	Key        string `json:"key"`
 	Summary    string `json:"summary"`
 	Status     string `json:"status"`
@@ -134,7 +135,7 @@ func parseJiraTickets(content []byte) []string {
 }
 
 var notes = map[string]string{
-	"OCPBUGS-22382": "WontDo confirmed",
+	"OCPBUGS-22382": "Won't Do confirmed",
 }
 
 func fetchTicketInfo(jiraClient jira.Client, ticketID string) (*ticketInfo, error) {
@@ -144,16 +145,19 @@ func fetchTicketInfo(jiraClient jira.Client, ticketID string) (*ticketInfo, erro
 	}
 
 	info := &ticketInfo{
-		Key:        issue.Key,
-		Summary:    issue.Fields.Summary,
-		Status:     issue.Fields.Status.Name,
-		Resolution: issue.Fields.Resolution.Name,
-		URL:        strings.Split(issue.Self, "/rest/api")[0] + "/browse/" + issue.Key,
-		Notes:      notes[issue.Key],
+		Key:     issue.Key,
+		Summary: issue.Fields.Summary,
+		Status:  issue.Fields.Status.Name,
+		URL:     strings.Split(issue.Self, "/rest/api")[0] + "/browse/" + issue.Key,
+		Notes:   notes[issue.Key],
 	}
 
 	if len(issue.Fields.Components) > 0 {
 		info.Component = issue.Fields.Components[0].Name
+	}
+
+	if issue.Fields.Resolution != nil {
+		info.Resolution = issue.Fields.Resolution.Name
 	}
 
 	return info, nil
@@ -196,12 +200,13 @@ func main() {
 
 	var ticketInfos []*ticketInfo
 
-	for _, ticketID := range tickets {
+	for i, ticketID := range tickets {
 		logrus.Infof("Fetching ticket: %s", ticketID)
 		info, err := fetchTicketInfo(jiraClient, ticketID)
 		if err != nil {
 			logrus.WithError(err).Fatalf("cannot fetch ticket %s", ticketID)
 		}
+		info.Number = i
 		ticketInfos = append(ticketInfos, info)
 	}
 
@@ -219,14 +224,15 @@ func main() {
 
 	case "md":
 		var buf strings.Builder
-		buf.WriteString("| Key | Summary | Status | Resolution | Component | Notes |\n")
-		buf.WriteString("|-----|---------|--------|------------|-----------|-------|\n")
+		buf.WriteString("| # | Key | Summary | Status | Resolution | Component | Notes |\n")
+		buf.WriteString("|---|-----|---------|--------|------------|-----------|-------|\n")
 		for _, ticket := range ticketInfos {
 			escapedSummary := strings.ReplaceAll(ticket.Summary, "|", "\\|")
 			escapedComponent := strings.ReplaceAll(ticket.Component, "|", "\\|")
 			escapedResolution := strings.ReplaceAll(ticket.Resolution, "|", "\\|")
 			escapedNotes := strings.ReplaceAll(ticket.Notes, "|", "\\|")
-			buf.WriteString(fmt.Sprintf("| [%s](%s) | %s | %s | %s | %s | %s |\n",
+			buf.WriteString(fmt.Sprintf("| %d | [%s](%s) | %s | %s | %s | %s | %s |\n",
+				ticket.Number,
 				ticket.Key,
 				ticket.URL,
 				escapedSummary,
