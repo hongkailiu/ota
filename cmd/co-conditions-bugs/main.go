@@ -251,6 +251,7 @@ func main() {
 
 	case "md":
 		var buf strings.Builder
+		buf.WriteString("## OCPBugs on [jira/dashboards/22315](https://redhat.atlassian.net/jira/dashboards/22315) as exceptions in CI\n")
 		buf.WriteString("| # | Key | Summary | Status | Resolution | Component | Assignee | Notes |\n")
 		buf.WriteString("|---|-----|---------|--------|------------|-----------|----------|-------|\n")
 		for _, ticket := range ticketInfos {
