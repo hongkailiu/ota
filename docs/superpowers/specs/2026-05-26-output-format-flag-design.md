@@ -71,17 +71,21 @@ case "json":
     
 case "md":
     var buf strings.Builder
-    buf.WriteString("| Key | Summary | Status | Component |\n")
-    buf.WriteString("|-----|---------|-----------|----------|\n")
+    buf.WriteString("| Key | Summary | Status | Resolution | Component | Notes |\n")
+    buf.WriteString("|-----|---------|--------|------------|-----------|-------|\n")
     for _, ticket := range ticketInfos {
         escapedSummary := strings.ReplaceAll(ticket.Summary, "|", "\\|")
         escapedComponent := strings.ReplaceAll(ticket.Component, "|", "\\|")
-        buf.WriteString(fmt.Sprintf("| [%s](%s) | %s | %s | %s |\n",
+        escapedResolution := strings.ReplaceAll(ticket.Resolution, "|", "\\|")
+        escapedNotes := strings.ReplaceAll(ticket.Notes, "|", "\\|")
+        buf.WriteString(fmt.Sprintf("| [%s](%s) | %s | %s | %s | %s | %s |\n",
             ticket.Key,
             ticket.URL,
             escapedSummary,
             ticket.Status,
-            escapedComponent))
+            escapedResolution,
+            escapedComponent,
+            escapedNotes))
     }
     output = buf.String()
 }
@@ -104,10 +108,10 @@ if o.outputFile == "-" {
 The markdown output will be a standard GitHub-flavored markdown table with clickable links in the Key column:
 
 ```
-| Key | Summary | Status | Component |
-|-----|---------|--------|-----------|
-| [OCPBUGS-12345](https://redhat.atlassian.net/browse/OCPBUGS-12345) | Bug description | Open | Component Name |
-| [OCPBUGS-67890](https://redhat.atlassian.net/browse/OCPBUGS-67890) | Another bug | Closed | Other Component |
+| Key | Summary | Status | Resolution | Component | Notes |
+|-----|---------|--------|------------|-----------|-------|
+| [OCPBUGS-12345](https://redhat.atlassian.net/browse/OCPBUGS-12345) | Bug description | Open | Done | Component Name | Note text |
+| [OCPBUGS-67890](https://redhat.atlassian.net/browse/OCPBUGS-67890) | Another bug | Closed | Won't Do | Other Component |  |
 ```
 
 **Special character handling:**

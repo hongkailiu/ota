@@ -151,17 +151,21 @@ Replace it with:
 
 	case "md":
 		var buf strings.Builder
-		buf.WriteString("| Key | Summary | Status | Component |\n")
-		buf.WriteString("|-----|---------|--------||-----------|\n")
+		buf.WriteString("| Key | Summary | Status | Resolution | Component | Notes |\n")
+		buf.WriteString("|-----|---------|--------|------------|-----------|-------|\n")
 		for _, ticket := range ticketInfos {
 			escapedSummary := strings.ReplaceAll(ticket.Summary, "|", "\\|")
 			escapedComponent := strings.ReplaceAll(ticket.Component, "|", "\\|")
-			buf.WriteString(fmt.Sprintf("| [%s](%s) | %s | %s | %s |\n",
+			escapedResolution := strings.ReplaceAll(ticket.Resolution, "|", "\\|")
+			escapedNotes := strings.ReplaceAll(ticket.Notes, "|", "\\|")
+			buf.WriteString(fmt.Sprintf("| [%s](%s) | %s | %s | %s | %s | %s |\n",
 				ticket.Key,
 				ticket.URL,
 				escapedSummary,
 				ticket.Status,
-				escapedComponent))
+				escapedResolution,
+				escapedComponent,
+				escapedNotes))
 		}
 		output = buf.String()
 	}
