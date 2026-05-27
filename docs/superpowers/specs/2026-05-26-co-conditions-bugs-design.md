@@ -115,17 +115,12 @@ Future enhancement: unit tests could be added for the parsing logic if extracted
 ## Command Line Interface
 
 ```bash
-./co-conditions-bugs \
-  --origin-directory /path/to/source/directory \
-  --jira-username "user@redhat.com" \
-  --jira-password-file ~/.config/ota/jira-api-token
+./co-conditions-bugs --origin-directory /path/to/source/directory
 ```
 
 ### Flags
 
 - `--origin-directory`: Path to the directory containing the source files (default: `~/repo/openshift/origin`)
-- `--jira-username`: Jira username (required, from flagutil.JiraOptions)
-- `--jira-password-file`: Path to file containing Jira API token (required, from flagutil.JiraOptions)
 
 ## Example Output
 

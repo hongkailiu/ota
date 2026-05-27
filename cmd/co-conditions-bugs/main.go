@@ -7,10 +7,7 @@
 //
 // Usage:
 //
-//	co-conditions-bugs --origin-directory ~/repo/openshift/origin \
-//	  --jira-username user@redhat.com \
-//	  --jira-password-file ~/.config/ota/jira-api-token \
-//	  --output-format md
+//	co-conditions-bugs --origin-directory ~/repo/openshift/origin --output-format md
 package main
 
 import (

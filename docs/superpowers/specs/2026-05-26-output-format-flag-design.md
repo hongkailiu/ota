@@ -134,25 +134,25 @@ Manual testing with both formats:
 
 1. **JSON output (default):**
 ```bash
-./co-conditions-bugs --jira-username user@redhat.com --jira-password-file ~/.config/ota/jira-api-token
+./co-conditions-bugs
 ```
 Expected: JSON array output (existing behavior)
 
 2. **JSON output (explicit):**
 ```bash
-./co-conditions-bugs -o json --jira-username user@redhat.com --jira-password-file ~/.config/ota/jira-api-token
+./co-conditions-bugs -o json
 ```
 Expected: Same JSON array output
 
 3. **Markdown output:**
 ```bash
-./co-conditions-bugs -o md --jira-username user@redhat.com --jira-password-file ~/.config/ota/jira-api-token
+./co-conditions-bugs -o md
 ```
 Expected: Markdown table with ticket information
 
 4. **Invalid format:**
 ```bash
-./co-conditions-bugs -o xml --jira-username user@redhat.com --jira-password-file ~/.config/ota/jira-api-token
+./co-conditions-bugs -o xml
 ```
 Expected: Error message "invalid output format "xml", must be 'json' or 'md'"
 
@@ -229,8 +229,5 @@ Update the package comment to reflect the new flag:
 //
 // Usage:
 //
-//	co-conditions-bugs --origin-directory ~/repo/openshift/origin \
-//	  --jira-username user@redhat.com \
-//	  --jira-password-file ~/.config/ota/jira-api-token \
-//	  --output-format md
+//	co-conditions-bugs --origin-directory ~/repo/openshift/origin --output-format md
 ```

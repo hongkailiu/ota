@@ -79,7 +79,7 @@ go build ./cmd/co-conditions-bugs
 ./co-conditions-bugs --help
 ```
 
-Expected: Help text showing `--origin-directory`, `--jira-username`, `--jira-password-file` flags
+Expected: Help text showing `--origin-directory` flag
 
 - [ ] **Step 3: Commit**
 
@@ -140,7 +140,7 @@ Replace the `logrus.Info("co-conditions-bugs started")` line in `main()` with:
 Run:
 ```bash
 go build ./cmd/co-conditions-bugs
-./co-conditions-bugs --jira-username test@redhat.com --jira-password-file /tmp/token
+./co-conditions-bugs
 ```
 
 Expected: Log output showing expanded path (e.g., "/Users/username/repo/openshift/origin")
@@ -208,7 +208,7 @@ Replace `logrus.Infof("Using origin directory: %s", expandedDir)` with:
 Run:
 ```bash
 go build ./cmd/co-conditions-bugs
-./co-conditions-bugs --origin-directory /tmp/test --jira-username test@redhat.com --jira-password-file /tmp/token
+./co-conditions-bugs --origin-directory /tmp/test
 ```
 
 Expected: Error "cannot read source files" (unless /tmp/test has those files)
@@ -286,7 +286,7 @@ echo '// https://bugzilla.redhat.com/browse/OCPBUGS-67890' > /tmp/test/test/exte
 
 Run:
 ```bash
-./co-conditions-bugs --origin-directory /tmp/test --jira-username test@redhat.com --jira-password-file /tmp/token
+./co-conditions-bugs --origin-directory /tmp/test
 ```
 
 Expected: Log output "Found 2 unique Jira tickets"
@@ -381,15 +381,14 @@ Replace the block after `if len(tickets) == 0` with:
 	logrus.Infof("Successfully fetched %d tickets", len(ticketInfos))
 ```
 
-- [ ] **Step 4: Test with invalid credentials (expected to fail)**
+- [ ] **Step 4: Test fetching public tickets**
 
 Run:
 ```bash
-echo "invalid-token" > /tmp/token
-./co-conditions-bugs --origin-directory /tmp/test --jira-username test@redhat.com --jira-password-file /tmp/token
+./co-conditions-bugs --origin-directory /tmp/test
 ```
 
-Expected: Error "cannot create Jira client" or "cannot fetch ticket" (authentication error)
+Expected: Successfully fetches ticket information (tickets are public)
 
 - [ ] **Step 5: Commit**
 
@@ -437,10 +436,10 @@ echo '// See https://issues.redhat.com/browse/OCPBUGS-11111
 
 Run:
 ```bash
-./co-conditions-bugs --origin-directory /tmp/test --jira-username valid@redhat.com --jira-password-file ~/.config/ota/jira-api-token
+./co-conditions-bugs --origin-directory /tmp/test
 ```
 
-Expected: JSON array output with ticket details (if credentials are valid and tickets exist)
+Expected: JSON array output with ticket details
 
 - [ ] **Step 3: Commit**
 
@@ -472,9 +471,7 @@ At the top of `main.go`, before `package main`, add:
 //
 // Usage:
 //
-//	co-conditions-bugs --origin-directory ~/repo/openshift/origin \
-//	  --jira-username user@redhat.com \
-//	  --jira-password-file ~/.config/ota/jira-api-token
+//	co-conditions-bugs --origin-directory ~/repo/openshift/origin
 package main
 ```
 
@@ -491,7 +488,7 @@ Expected: Clean build with no errors
 
 If you have the origin repository locally:
 ```bash
-./co-conditions-bugs --jira-username your-email@redhat.com --jira-password-file ~/.config/ota/jira-api-token
+./co-conditions-bugs
 ```
 
 Expected: JSON output with actual ticket information from the origin repository files
@@ -499,7 +496,7 @@ Expected: JSON output with actual ticket information from the origin repository 
 - [ ] **Step 4: Test with custom directory**
 
 ```bash
-./co-conditions-bugs --origin-directory /path/to/custom/dir --jira-username user@redhat.com --jira-password-file /path/to/token
+./co-conditions-bugs --origin-directory /path/to/custom/dir
 ```
 
 Expected: Reads files from custom directory
