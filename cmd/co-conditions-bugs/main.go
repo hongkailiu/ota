@@ -29,6 +29,8 @@ import (
 type options struct {
 	jira            flagutil.JiraOptions
 	originDirectory string
+	outputFormat    string
+	outputFile      string
 }
 
 type ticketInfo struct {
@@ -44,6 +46,8 @@ func gatherOptions() options {
 
 	o.jira.AddFlags(fs)
 	fs.StringVar(&o.originDirectory, "origin-directory", "~/repo/openshift/origin", "Path to the origin repository directory")
+	fs.StringVar(&o.outputFormat, "output-format", "json", "output format")
+	fs.StringVar(&o.outputFile, "output-file", "/tmp/output.json", "output file")
 
 	if err := fs.Parse(os.Args[1:]); err != nil {
 		logrus.WithError(err).Fatalf("cannot parse args: '%s'", os.Args[1:])
