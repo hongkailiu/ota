@@ -76,8 +76,9 @@ case "md":
     for _, ticket := range ticketInfos {
         escapedSummary := strings.ReplaceAll(ticket.Summary, "|", "\\|")
         escapedComponent := strings.ReplaceAll(ticket.Component, "|", "\\|")
-        buf.WriteString(fmt.Sprintf("| %s | %s | %s | %s |\n",
+        buf.WriteString(fmt.Sprintf("| [%s](%s) | %s | %s | %s |\n",
             ticket.Key,
+            ticket.URL,
             escapedSummary,
             ticket.Status,
             escapedComponent))
@@ -100,18 +101,19 @@ if o.outputFile == "-" {
 
 ### Markdown Table Format
 
-The markdown output will be a standard GitHub-flavored markdown table:
+The markdown output will be a standard GitHub-flavored markdown table with clickable links in the Key column:
 
 ```
 | Key | Summary | Status | Component |
 |-----|---------|--------|-----------|
-| OCPBUGS-12345 | Bug description | Open | Component Name |
-| OCPBUGS-67890 | Another bug | Closed | Other Component |
+| [OCPBUGS-12345](https://redhat.atlassian.net/browse/OCPBUGS-12345) | Bug description | Open | Component Name |
+| [OCPBUGS-67890](https://redhat.atlassian.net/browse/OCPBUGS-67890) | Another bug | Closed | Other Component |
 ```
 
 **Special character handling:**
 - Pipe characters (`|`) in ticket data will be escaped or replaced to avoid breaking the table format
 - Use `strings.ReplaceAll(field, "|", "\\|")` for each field value
+- Key column uses markdown link format: `[KEY](URL)` for clickable links to Jira tickets
 
 ### Error Handling
 

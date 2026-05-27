@@ -32,12 +32,12 @@
 
 ---
 
-### Task 2: Fix output-file default and add validation
+### Task 2: Fix output-file default and add validation ✅ COMPLETED
 
 **Files:**
 - Modify: `cmd/co-conditions-bugs/main.go`
 
-- [ ] **Step 1: Change output-file default to "-"**
+- [x] **Step 1: Change output-file default to "-"**
 
 Find the `--output-file` flag registration (around line 50) and change the default from "/tmp/output.json" to "-":
 
@@ -45,7 +45,7 @@ Find the `--output-file` flag registration (around line 50) and change the defau
 	fs.StringVar(&o.outputFile, "output-file", "-", "Output file path (use - for stdout)")
 ```
 
-- [ ] **Step 2: Update validate() method**
+- [x] **Step 2: Update validate() method**
 
 Find the `validate()` method (around line 59) and replace it with:
 
@@ -63,7 +63,7 @@ func (o *options) validate() error {
 }
 ```
 
-- [ ] **Step 3: Test validation with invalid format**
+- [x] **Step 3: Test validation with invalid format**
 
 Run:
 ```bash
@@ -73,7 +73,7 @@ go build ./cmd/co-conditions-bugs
 
 Expected: Error message "invalid output format \"xml\", must be 'json' or 'md'"
 
-- [ ] **Step 4: Test validation with valid format**
+- [x] **Step 4: Test validation with valid format**
 
 Run:
 ```bash
@@ -82,7 +82,7 @@ Run:
 
 Expected: Different error (file reading failure, not validation error)
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add cmd/co-conditions-bugs/main.go
@@ -93,12 +93,12 @@ Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
 
 ---
 
-### Task 3: Implement markdown output formatting
+### Task 3: Implement markdown output formatting ✅ COMPLETED
 
 **Files:**
 - Modify: `cmd/co-conditions-bugs/main.go`
 
-- [ ] **Step 1: Add strings import**
+- [x] **Step 1: Add strings import**
 
 Add `"strings"` to the import list (should be inserted alphabetically in the standard library imports section):
 
@@ -119,7 +119,7 @@ import (
 )
 ```
 
-- [ ] **Step 2: Replace JSON output with format generation and file writing**
+- [x] **Step 2: Replace JSON output with format generation and file writing**
 
 Find the current output code (around lines 171-176) that looks like:
 
@@ -156,8 +156,9 @@ Replace it with:
 		for _, ticket := range ticketInfos {
 			escapedSummary := strings.ReplaceAll(ticket.Summary, "|", "\\|")
 			escapedComponent := strings.ReplaceAll(ticket.Component, "|", "\\|")
-			buf.WriteString(fmt.Sprintf("| %s | %s | %s | %s |\n",
+			buf.WriteString(fmt.Sprintf("| [%s](%s) | %s | %s | %s |\n",
 				ticket.Key,
+				ticket.URL,
 				escapedSummary,
 				ticket.Status,
 				escapedComponent))
@@ -175,7 +176,7 @@ Replace it with:
 	}
 ```
 
-- [ ] **Step 3: Build the updated binary**
+- [x] **Step 3: Build the updated binary**
 
 Run:
 ```bash
@@ -184,7 +185,7 @@ go build ./cmd/co-conditions-bugs
 
 Expected: Clean build with no errors
 
-- [ ] **Step 4: Test JSON output (default)**
+- [x] **Step 4: Test JSON output (default)**
 
 Create test files:
 ```bash
@@ -196,7 +197,7 @@ echo '// https://bugzilla.redhat.com/browse/OCPBUGS-22222' > /tmp/test/test/exte
 
 Note: This test will fail at the Jira API call without valid credentials, but you can verify it parses the tickets correctly by checking the log output.
 
-- [ ] **Step 5: Test markdown output to stdout**
+- [x] **Step 5: Test markdown output to stdout**
 
 Run:
 ```bash
@@ -205,7 +206,7 @@ Run:
 
 Expected: Log shows "Found 2 unique Jira tickets", then fails at Jira API call (expected without valid credentials)
 
-- [ ] **Step 6: Test writing to file**
+- [x] **Step 6: Test writing to file**
 
 Run:
 ```bash
@@ -214,7 +215,7 @@ Run:
 
 Expected: Would write to file if Jira credentials were valid
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add cmd/co-conditions-bugs/main.go
@@ -225,12 +226,12 @@ Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
 
 ---
 
-### Task 4: Update package documentation
+### Task 4: Update package documentation ✅ COMPLETED
 
 **Files:**
 - Modify: `cmd/co-conditions-bugs/main.go`
 
-- [ ] **Step 1: Update package comment**
+- [x] **Step 1: Update package comment**
 
 Find the package comment at the top of the file (lines 1-12) and update it to:
 
@@ -251,7 +252,7 @@ Find the package comment at the top of the file (lines 1-12) and update it to:
 package main
 ```
 
-- [ ] **Step 2: Build final binary**
+- [x] **Step 2: Build final binary**
 
 Run:
 ```bash
@@ -260,7 +261,7 @@ go build ./cmd/co-conditions-bugs
 
 Expected: Clean build with no errors
 
-- [ ] **Step 3: Test with actual repository (if available)**
+- [x] **Step 3: Test with actual repository (if available)**
 
 If you have the origin repository with valid Jira credentials:
 
@@ -276,7 +277,7 @@ Test Markdown output:
 
 Expected: Both commands produce output in their respective formats with actual ticket data
 
-- [ ] **Step 4: Final commit**
+- [x] **Step 4: Final commit**
 
 ```bash
 git add cmd/co-conditions-bugs/main.go
