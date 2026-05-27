@@ -261,10 +261,15 @@ func main() {
 			escapedResolution := strings.ReplaceAll(ticket.Resolution, "|", "\\|")
 			escapedAssignee := strings.ReplaceAll(ticket.Assignee, "|", "\\|")
 			escapedNotes := strings.ReplaceAll(ticket.Notes, "|", "\\|")
-			buf.WriteString(fmt.Sprintf("| %d | [%s](%s) | %s | %s | %s | %s | %s | %s |\n",
+
+			keyField := fmt.Sprintf("[%s](%s)", ticket.Key, ticket.URL)
+			if strings.Contains(ticket.Notes, "Won't Do confirmed") {
+				keyField = fmt.Sprintf("~~%s~~", keyField)
+			}
+
+			buf.WriteString(fmt.Sprintf("| %d | %s | %s | %s | %s | %s | %s | %s |\n",
 				ticket.Number,
-				ticket.Key,
-				ticket.URL,
+				keyField,
 				escapedSummary,
 				ticket.Status,
 				escapedResolution,
