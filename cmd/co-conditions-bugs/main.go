@@ -11,6 +11,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -20,7 +21,9 @@ import (
 	"sort"
 	"strings"
 
+	andyjira "github.com/andygrunwald/go-jira"
 	"github.com/sirupsen/logrus"
+	"k8s.io/apimachinery/pkg/util/sets"
 	"sigs.k8s.io/prow/pkg/jira"
 
 	"github.com/petr-muller/ota/internal/flagutil"
@@ -134,7 +137,6 @@ func parseJiraTickets(content []byte) []string {
 
 // TODO: verified double-check
 // TODO: commit output to GitHub
-// TODO: ensure all the bugs are on the dashboard
 // TODO: strikethrough if confirmed
 var notes = map[string]string{
 	"OCPBUGS-22382": "Won't Do confirmed",
@@ -204,6 +206,24 @@ func main() {
 	jiraClient, err := o.jira.Client()
 	if err != nil {
 		logrus.WithError(err).Fatal("cannot create Jira client")
+	}
+
+	ctx := context.Background()
+	jql := "issue in (linkedIssues(OTA-1643), linkedIssues(OTA-1626), linkedIssues(OTA-362), linkedIssues(TRT-1578), linkedIssues(OTA-1637)) AND project = \"OpenShift Bugs\""
+	// Currently about 70 in total
+	issues, _, err := jiraClient.SearchV2JqlWithContext(ctx, jql, &andyjira.SearchOptionsV2{MaxResults: 200, Fields: []string{"id", "key"}})
+	if err != nil {
+		logrus.WithError(err).Fatal("cannot search Jira issues")
+	}
+	logrus.Infof("Found %d Jira tickets on the dashboard", len(issues))
+
+	delta := sets.New[string](tickets...)
+	for _, issue := range issues {
+		logrus.WithField("id", issue.ID).WithField("key", issue.Key).Debug("Found issue")
+		delta.Delete(issue.Key)
+	}
+	if delta.Len() > 0 {
+		logrus.WithField("delta", sets.List[string](delta)).Fatal("jira issues in o/origin but not on the dashboard")
 	}
 
 	var ticketInfos []*ticketInfo
