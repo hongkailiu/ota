@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"os"
+	"path/filepath"
 
 	"github.com/sirupsen/logrus"
 
@@ -32,11 +33,33 @@ func (o *options) validate() error {
 	return o.jira.Validate()
 }
 
+func expandPath(path string) (string, error) {
+	if len(path) == 0 || path[0] != '~' {
+		return path, nil
+	}
+
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return "", err
+	}
+
+	if len(path) == 1 {
+		return homeDir, nil
+	}
+
+	return filepath.Join(homeDir, path[1:]), nil
+}
+
 func main() {
 	o := gatherOptions()
 	if err := o.validate(); err != nil {
 		logrus.WithError(err).Fatal("invalid options")
 	}
 
-	logrus.Info("co-conditions-bugs started")
+	expandedDir, err := expandPath(o.originDirectory)
+	if err != nil {
+		logrus.WithError(err).Fatal("cannot expand origin directory path")
+	}
+
+	logrus.Infof("Using origin directory: %s", expandedDir)
 }
