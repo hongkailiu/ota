@@ -7,6 +7,7 @@ import (
 	"regexp"
 
 	"github.com/sirupsen/logrus"
+	"sigs.k8s.io/prow/pkg/jira"
 
 	"github.com/petr-muller/ota/internal/flagutil"
 )
@@ -14,6 +15,13 @@ import (
 type options struct {
 	jira            flagutil.JiraOptions
 	originDirectory string
+}
+
+type ticketInfo struct {
+	Key       string `json:"key"`
+	Summary   string `json:"summary"`
+	Status    string `json:"status"`
+	Component string `json:"component"`
 }
 
 func gatherOptions() options {
@@ -93,6 +101,25 @@ func parseJiraTickets(content []byte) []string {
 	return tickets
 }
 
+func fetchTicketInfo(jiraClient jira.Client, ticketID string) (*ticketInfo, error) {
+	issue, err := jiraClient.GetIssue(ticketID)
+	if err != nil {
+		return nil, err
+	}
+
+	info := &ticketInfo{
+		Key:     issue.Key,
+		Summary: issue.Fields.Summary,
+		Status:  issue.Fields.Status.Name,
+	}
+
+	if len(issue.Fields.Components) > 0 {
+		info.Component = issue.Fields.Components[0].Name
+	}
+
+	return info, nil
+}
+
 func main() {
 	o := gatherOptions()
 	if err := o.validate(); err != nil {
@@ -120,4 +147,22 @@ func main() {
 		logrus.Info("No Jira tickets found")
 		return
 	}
+
+	jiraClient, err := o.jira.Client()
+	if err != nil {
+		logrus.WithError(err).Fatal("cannot create Jira client")
+	}
+
+	var ticketInfos []*ticketInfo
+
+	for _, ticketID := range tickets {
+		logrus.Infof("Fetching ticket: %s", ticketID)
+		info, err := fetchTicketInfo(jiraClient, ticketID)
+		if err != nil {
+			logrus.WithError(err).Fatalf("cannot fetch ticket %s", ticketID)
+		}
+		ticketInfos = append(ticketInfos, info)
+	}
+
+	logrus.Infof("Successfully fetched %d tickets", len(ticketInfos))
 }
