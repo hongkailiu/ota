@@ -1,3 +1,15 @@
+// co-conditions-bugs extracts Jira ticket references from specific Go source files
+// in the OpenShift origin repository and outputs their details as JSON.
+//
+// It reads two hardcoded files:
+//   - pkg/monitortests/clusterversionoperator/legacycvomonitortests/operators.go
+//   - test/extended/machines/scale.go
+//
+// Usage:
+//
+//	co-conditions-bugs --origin-directory ~/repo/openshift/origin \
+//	  --jira-username user@redhat.com \
+//	  --jira-password-file ~/.config/ota/jira-api-token
 package main
 
 import (
