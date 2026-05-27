@@ -4,6 +4,7 @@ import (
 	"flag"
 	"os"
 	"path/filepath"
+	"regexp"
 
 	"github.com/sirupsen/logrus"
 
@@ -71,6 +72,27 @@ func readSourceFiles(baseDir string) ([]byte, error) {
 	return combined, nil
 }
 
+func parseJiraTickets(content []byte) []string {
+	re := regexp.MustCompile(`https://.*/browse/(OCPBUGS-\d+)`)
+	matches := re.FindAllStringSubmatch(string(content), -1)
+
+	// Deduplicate using map
+	seen := make(map[string]bool)
+	var tickets []string
+
+	for _, match := range matches {
+		if len(match) > 1 {
+			ticketID := match[1]
+			if !seen[ticketID] {
+				seen[ticketID] = true
+				tickets = append(tickets, ticketID)
+			}
+		}
+	}
+
+	return tickets
+}
+
 func main() {
 	o := gatherOptions()
 	if err := o.validate(); err != nil {
@@ -90,4 +112,12 @@ func main() {
 	}
 
 	logrus.Infof("Read %d bytes from source files", len(content))
+
+	tickets := parseJiraTickets(content)
+	logrus.Infof("Found %d unique Jira tickets", len(tickets))
+
+	if len(tickets) == 0 {
+		logrus.Info("No Jira tickets found")
+		return
+	}
 }
