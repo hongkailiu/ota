@@ -135,13 +135,14 @@ func parseJiraTickets(content []byte) []string {
 	return tickets
 }
 
-// TODO: verified double-check
 // TODO: commit output to GitHub
 // TODO: strikethrough if confirmed
 var notes = map[string]string{
 	"OCPBUGS-22382": "Won't Do confirmed",
 	"OCPBUGS-23744": "Won't Do confirmed: OLMv0 in maintenance mode",
 	"OCPBUGS-65583": "Won't Do confirmed: OLMv0 in maintenance mode",
+	"OCPBUGS-20056": "Possibly dup of  OCPBUGS-66027",
+	"OCPBUGS-65984": "Under evaluation",
 }
 
 func fetchTicketInfo(jiraClient jira.Client, ticketID string) (*ticketInfo, error) {
