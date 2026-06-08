@@ -140,7 +140,8 @@ var notes = map[string]string{
 	"OCPBUGS-23744": "Won't Do confirmed: OLMv0 in maintenance mode",
 	"OCPBUGS-65583": "Won't Do confirmed: OLMv0 in maintenance mode",
 	"OCPBUGS-20056": "Possibly dup of  OCPBUGS-66027",
-	"OCPBUGS-65984": "Under evaluation",
+	"OCPBUGS-42837": "To be removed in 5.1",
+	"OCPBUGS-65984": "Two-Nodes clusters not fixed",
 }
 
 func fetchTicketInfo(jiraClient jira.Client, ticketID string) (*ticketInfo, error) {
