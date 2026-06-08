@@ -10,21 +10,21 @@
 | 6 | [OCPBUGS-38662](https://redhat.atlassian.net/browse/OCPBUGS-38662) | clusteroperator/kube-controller-manager blips Degraded=True during upgrade test | POST |  | kube-controller-manager | Ondra Kupka |  |
 | 7 | [OCPBUGS-38663](https://redhat.atlassian.net/browse/OCPBUGS-38663) | clusteroperator/kube-scheduler blips Degraded=True during upgrade test | New |  | kube-scheduler | Ondra Kupka |  |
 | 8 | [OCPBUGS-38676](https://redhat.atlassian.net/browse/OCPBUGS-38676) | clusteroperator/console blips Degraded=True during CI job run | POST |  | Management Console | Steve Goodwin |  |
-| 9 | [OCPBUGS-42837](https://redhat.atlassian.net/browse/OCPBUGS-42837) | clusteroperator/cloud-controller-manager blips Degraded=True during upgrade test | POST |  | Cloud Compute / Cloud Controller Manager | Nolan Brubaker |  |
+| 9 | [OCPBUGS-42837](https://redhat.atlassian.net/browse/OCPBUGS-42837) | clusteroperator/cloud-controller-manager blips Degraded=True during upgrade test | Verified |  | Cloud Compute / Cloud Controller Manager | Nolan Brubaker | To be removed in 5.1 |
 | 10 | [OCPBUGS-45921](https://redhat.atlassian.net/browse/OCPBUGS-45921) | clusteroperator/ingress blips Degraded=True during hypershift conformance test | ASSIGNED |  | Networking / router | Andrey Lebedev |  |
 | 11 | [OCPBUGS-62627](https://redhat.atlassian.net/browse/OCPBUGS-62627) | cluster operator ingress reported Progressing=True with reason=Reconciling for a node reboot | ASSIGNED |  | Networking / router | Davide Salerno |  |
 | 12 | [OCPBUGS-62629](https://redhat.atlassian.net/browse/OCPBUGS-62629) | cluster operator kube-storage-version-migrator reported Progressing=True with reason=KubeStorageVersionMigrator_Deploying for a node reboot | New |  | kube-storage-version-migrator |  |  |
 | 13 | [OCPBUGS-62633](https://redhat.atlassian.net/browse/OCPBUGS-62633) | cluster operator service-ca reported Progressing=True with reason=_ManagedDeploymentsAvailable for a node reboot | POST |  | service-ca | Ondra Kupka |  |
 | 14 | [OCPBUGS-63116](https://redhat.atlassian.net/browse/OCPBUGS-63116) | cluster operator openshift-controller-manager reported Progressing=True with reason= _DesiredStateNotYetAchieved or RouteControllerManager_DesiredStateNotYetAchieved for a node reboot | New |  | openshift-controller-manager / controller-manager | Prabhakar Palepu |  |
 | 15 | [OCPBUGS-64688](https://redhat.atlassian.net/browse/OCPBUGS-64688) | cluster operator console reported Progressing=True with reason= SyncLoopRefresh_InProgress for a node reboot | POST |  | Management Console | Steve Goodwin |  |
-| 16 | [OCPBUGS-64852](https://redhat.atlassian.net/browse/OCPBUGS-64852) | Cluster Operator cloud-controller-manager did not report Progressing=True during a cluster update | ASSIGNED |  | Cloud Compute / Cloud Controller Manager | Theo Barber-Bany |  |
+| 16 | [OCPBUGS-64852](https://redhat.atlassian.net/browse/OCPBUGS-64852) | Cluster Operator cloud-controller-manager did not report Progressing=True during a cluster update | POST |  | Cloud Compute / Cloud Controller Manager | Theo Barber-Bany |  |
 | 17 | ~~[OCPBUGS-65583](https://redhat.atlassian.net/browse/OCPBUGS-65583)~~ | Cluster Operator operator-lifecycle-manager did not report Progressing=True during a cluster update | Closed | Won't Do | OLM | Jordan Keister | Won't Do confirmed: OLMv0 in maintenance mode |
 | 18 | [OCPBUGS-65647](https://redhat.atlassian.net/browse/OCPBUGS-65647) | Cluster Operator openshift-samples did not report Progressing=True during a cluster update | New |  | Samples Operator | Shannon Poole |  |
 | 19 | [OCPBUGS-65896](https://redhat.atlassian.net/browse/OCPBUGS-65896) | cluster operator authentication reported Progressing=True on cluster scaling up | POST |  | apiserver-auth | Ondra Kupka |  |
-| 20 | [OCPBUGS-65984](https://redhat.atlassian.net/browse/OCPBUGS-65984) | kube-storage-version-migrator goes Available=False with reason=KubeStorageVersionMigrator_Deploying during updates | Verified |  | kube-storage-version-migrator | Luis Sanchez | Under evaluation |
+| 20 | [OCPBUGS-65984](https://redhat.atlassian.net/browse/OCPBUGS-65984) | kube-storage-version-migrator goes Available=False with reason=KubeStorageVersionMigrator_Deploying during updates | POST |  | kube-storage-version-migrator | Luis Sanchez | Two-Nodes clusters not fixed |
 | 21 | [OCPBUGS-66101](https://redhat.atlassian.net/browse/OCPBUGS-66101) | Cluster Operator baremetal did not report Progressing=True during a cluster update | New |  | Bare Metal Hardware Provisioning | Iury Gregory Melo Ferreira |  |
 | 22 | [OCPBUGS-66213](https://redhat.atlassian.net/browse/OCPBUGS-66213) | image-registry operator changed condition/Available to false during non-upgrade job | New |  | Image Registry | Flavian Missi |  |
-| 23 | [OCPBUGS-66225](https://redhat.atlassian.net/browse/OCPBUGS-66225) | clusteroperator/image-registry blips Degraded=True during upgrade test | ASSIGNED |  | Image Registry | Thomas Jungblut |  |
+| 23 | [OCPBUGS-66225](https://redhat.atlassian.net/browse/OCPBUGS-66225) | clusteroperator/image-registry blips Degraded=True during upgrade test | ASSIGNED |  | Image Registry |  |  |
 | 24 | [OCPBUGS-67134](https://redhat.atlassian.net/browse/OCPBUGS-67134) | console ClusterOperator should not blip Available=False with the reason=Deployment_InsufficientReplicas | New |  | Management Console | Jakub Hadvig |  |
 | 25 | [OCPBUGS-82160](https://redhat.atlassian.net/browse/OCPBUGS-82160) | Test failure in upgrade jobs- [bz-Image Registry] clusteroperator/image-registry should not change condition/Available | ASSIGNED |  | Image Registry | Flavian Missi |  |
 | 26 | [OCPBUGS-85677](https://redhat.atlassian.net/browse/OCPBUGS-85677) | cluster operator network reported Progressing=True for a node reboot | POST |  | Networking / cluster-network-operator | Jamo Luhrsen |  |
@@ -34,6 +34,6 @@
 
 ## Build info
 
-* Build: v20260602-14fe331
+* Build: v20260608-c876b6a
 
-* `git_commit_origin`: v4.1.0-11416-g62be750498
+* `git_commit_origin`: v4.1.0-11494-ge731799371
