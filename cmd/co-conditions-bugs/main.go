@@ -37,15 +37,17 @@ type options struct {
 }
 
 type ticketInfo struct {
-	Number     int    `json:"count"`
-	Key        string `json:"key"`
-	Summary    string `json:"summary"`
-	Status     string `json:"status"`
-	Component  string `json:"component"`
-	Resolution string `json:"resolution"`
-	Assignee   string `json:"assignee"`
-	URL        string `json:"url"`
-	Notes      string `json:"notes"`
+	Number         int    `json:"count"`
+	Key            string `json:"key"`
+	Summary        string `json:"summary"`
+	Status         string `json:"status"`
+	Component      string `json:"component"`
+	Resolution     string `json:"resolution"`
+	Assignee       string `json:"assignee"`
+	URL            string `json:"url"`
+	Notes          string `json:"notes"`
+	TargetVersion  string `json:"target_version"`
+	ReleaseBlocker string `json:"release_blocker"`
 }
 
 func gatherOptions() options {
