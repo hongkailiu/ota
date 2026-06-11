@@ -135,6 +135,41 @@ func parseJiraTickets(content []byte) []string {
 	return tickets
 }
 
+func extractCustomField(unknowns map[string]interface{}, fieldID string) string {
+	value, exists := unknowns[fieldID]
+	if !exists || value == nil {
+		return ""
+	}
+
+	// Handle direct string
+	if str, ok := value.(string); ok {
+		return str
+	}
+
+	// Handle object with Name field (common pattern)
+	if obj, ok := value.(map[string]interface{}); ok {
+		if name, ok := obj["name"].(string); ok {
+			return name
+		}
+		if val, ok := obj["value"].(string); ok {
+			return val
+		}
+	}
+
+	// Handle array with objects (for Target Version field)
+	if arr, ok := value.([]interface{}); ok {
+		if len(arr) > 0 {
+			if obj, ok := arr[0].(map[string]interface{}); ok {
+				if name, ok := obj["name"].(string); ok {
+					return name
+				}
+			}
+		}
+	}
+
+	return ""
+}
+
 var notes = map[string]string{
 	"OCPBUGS-22382": "Won't Do confirmed",
 	"OCPBUGS-23744": "Won't Do confirmed: OLMv0 in maintenance mode",
@@ -144,11 +179,17 @@ var notes = map[string]string{
 	"OCPBUGS-65984": "Two-Nodes clusters not fixed",
 }
 
+const (
+	customFieldTargetVersion  = "customfield_10855"
+	customFieldReleaseBlocker = "customfield_10847"
+)
+
 func fetchTicketInfo(jiraClient jira.Client, ticketID string) (*ticketInfo, error) {
 	issue, err := jiraClient.GetIssue(ticketID)
 	if err != nil {
 		return nil, err
 	}
+
 
 	info := &ticketInfo{
 		Key:     issue.Key,
