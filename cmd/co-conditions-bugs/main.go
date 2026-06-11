@@ -300,26 +300,30 @@ func main() {
 	case "md":
 		var buf strings.Builder
 		buf.WriteString("## OCPBugs on [jira/dashboards/22315](https://redhat.atlassian.net/jira/dashboards/22315) as exceptions in CI\n")
-		buf.WriteString("| # | Key | Summary | Status | Resolution | Component | Assignee | Notes |\n")
-		buf.WriteString("|---|-----|---------|--------|------------|-----------|----------|-------|\n")
+		buf.WriteString("| # | Key | Summary | Status | Resolution | Target Version | Release Blocker | Component | Assignee | Notes |\n")
+		buf.WriteString("|---|-----|---------|--------|------------|----------------|-----------------|-----------|----------|-------|\n")
 		for _, ticket := range ticketInfos {
 			escapedSummary := strings.ReplaceAll(ticket.Summary, "|", "\\|")
 			escapedComponent := strings.ReplaceAll(ticket.Component, "|", "\\|")
 			escapedResolution := strings.ReplaceAll(ticket.Resolution, "|", "\\|")
 			escapedAssignee := strings.ReplaceAll(ticket.Assignee, "|", "\\|")
 			escapedNotes := strings.ReplaceAll(ticket.Notes, "|", "\\|")
+			escapedTargetVersion := strings.ReplaceAll(ticket.TargetVersion, "|", "\\|")
+			escapedReleaseBlocker := strings.ReplaceAll(ticket.ReleaseBlocker, "|", "\\|")
 
 			keyField := fmt.Sprintf("[%s](%s)", ticket.Key, ticket.URL)
 			if strings.Contains(ticket.Notes, "Won't Do confirmed") {
 				keyField = fmt.Sprintf("~~%s~~", keyField)
 			}
 
-			buf.WriteString(fmt.Sprintf("| %d | %s | %s | %s | %s | %s | %s | %s |\n",
+			buf.WriteString(fmt.Sprintf("| %d | %s | %s | %s | %s | %s | %s | %s | %s | %s |\n",
 				ticket.Number,
 				keyField,
 				escapedSummary,
 				ticket.Status,
 				escapedResolution,
+				escapedTargetVersion,
+				escapedReleaseBlocker,
 				escapedComponent,
 				escapedAssignee,
 				escapedNotes))
