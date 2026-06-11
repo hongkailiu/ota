@@ -213,6 +213,10 @@ func fetchTicketInfo(jiraClient jira.Client, ticketID string) (*ticketInfo, erro
 		info.Assignee = issue.Fields.Assignee.DisplayName
 	}
 
+	// Extract custom fields
+	info.TargetVersion = extractCustomField(issue.Fields.Unknowns, customFieldTargetVersion)
+	info.ReleaseBlocker = extractCustomField(issue.Fields.Unknowns, customFieldReleaseBlocker)
+
 	return info, nil
 }
 
