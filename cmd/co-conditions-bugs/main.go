@@ -179,6 +179,7 @@ var notes = map[string]string{
 	"OCPBUGS-20056": "Possibly dup of  OCPBUGS-66027",
 	"OCPBUGS-42837": "To be removed in 5.1",
 	"OCPBUGS-65984": "Two-Nodes clusters not fixed",
+	"OCPBUGS-64852": "Under evaluation",
 }
 
 const (
@@ -191,7 +192,6 @@ func fetchTicketInfo(jiraClient jira.Client, ticketID string) (*ticketInfo, erro
 	if err != nil {
 		return nil, err
 	}
-
 
 	info := &ticketInfo{
 		Key:     issue.Key,
