@@ -299,10 +299,23 @@ func main() {
 
 	case "md":
 		var buf strings.Builder
+
+		// Define workflow order for status display
+		workflowOrder := []string{"New", "ASSIGNED", "POST", "ON_QA", "Verified", "Closed"}
+
+		// Count statuses
+		statusCounts := make(map[string]int)
+
 		buf.WriteString("## OCPBugs on [jira/dashboards/22315](https://redhat.atlassian.net/jira/dashboards/22315) as exceptions in CI\n")
-		buf.WriteString("| # | Key | Summary | Status | Resolution | Target Version | Release Blocker | Component | Assignee | Notes |\n")
-		buf.WriteString("|---|-----|---------|--------|------------|----------------|-----------------|-----------|----------|-------|\n")
+
+		// Build table rows and count statuses
+		var tableRows strings.Builder
+		tableRows.WriteString("| # | Key | Summary | Status | Resolution | Target Version | Release Blocker | Component | Assignee | Notes |\n")
+		tableRows.WriteString("|---|-----|---------|--------|------------|----------------|-----------------|-----------|----------|-------|\n")
+
 		for _, ticket := range ticketInfos {
+			statusCounts[ticket.Status]++
+
 			escapedSummary := strings.ReplaceAll(ticket.Summary, "|", "\\|")
 			escapedComponent := strings.ReplaceAll(ticket.Component, "|", "\\|")
 			escapedResolution := strings.ReplaceAll(ticket.Resolution, "|", "\\|")
@@ -316,7 +329,7 @@ func main() {
 				keyField = fmt.Sprintf("~~%s~~", keyField)
 			}
 
-			buf.WriteString(fmt.Sprintf("| %d | %s | %s | %s | %s | %s | %s | %s | %s | %s |\n",
+			tableRows.WriteString(fmt.Sprintf("| %d | %s | %s | %s | %s | %s | %s | %s | %s | %s |\n",
 				ticket.Number,
 				keyField,
 				escapedSummary,
@@ -328,6 +341,47 @@ func main() {
 				escapedAssignee,
 				escapedNotes))
 		}
+
+		// Generate status summary
+		var summaryParts []string
+		total := len(ticketInfos)
+		summaryParts = append(summaryParts, fmt.Sprintf("Total: %d issues", total))
+
+		// Add counts for statuses in workflow order
+		for _, status := range workflowOrder {
+			if count, exists := statusCounts[status]; exists && count > 0 {
+				summaryParts = append(summaryParts, fmt.Sprintf("%s: %d", status, count))
+			}
+		}
+
+		// Add counts for any remaining statuses not in workflow order (alphabetically)
+		var otherStatuses []string
+		for status := range statusCounts {
+			found := false
+			for _, wfStatus := range workflowOrder {
+				if status == wfStatus {
+					found = true
+					break
+				}
+			}
+			if !found {
+				otherStatuses = append(otherStatuses, status)
+			}
+		}
+		sort.Strings(otherStatuses)
+		for _, status := range otherStatuses {
+			if count := statusCounts[status]; count > 0 {
+				summaryParts = append(summaryParts, fmt.Sprintf("%s: %d", status, count))
+			}
+		}
+
+		statusSummary := strings.Join(summaryParts, " | ")
+
+		// Write summary and table to buffer
+		buf.WriteString(statusSummary)
+		buf.WriteString("\n\n")
+		buf.WriteString(tableRows.String())
+
 		output = buf.String()
 	}
 
