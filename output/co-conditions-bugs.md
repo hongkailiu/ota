@@ -1,4 +1,6 @@
 ## OCPBugs on [jira/dashboards/22315](https://redhat.atlassian.net/jira/dashboards/22315) as exceptions in CI
+Total: 30 issues | New: 9 | ASSIGNED: 7 | POST: 8 | ON_QA: 1 | Verified: 2 | Closed: 3
+
 | # | Key | Summary | Status | Resolution | Target Version | Release Blocker | Component | Assignee | Notes |
 |---|-----|---------|--------|------------|----------------|-----------------|-----------|----------|-------|
 | 0 | [OCPBUGS-20056](https://redhat.atlassian.net/browse/OCPBUGS-20056) | Single short-lived operand blip shouldn't cause authentication operator Available=False | POST |  | 4.22.0 | Rejected | apiserver-auth | Ondra Kupka | Possibly dup of  OCPBUGS-66027 |
@@ -34,6 +36,6 @@
 
 ## Build info
 
-* Build: v20260615-fb9f395
+* Build: v20260616-c45ce9a
 
 * `git_commit_origin`: v4.1.0-11508-ge3252e2b7b
