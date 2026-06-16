@@ -36,6 +36,6 @@ Total: 30 issues | New: 9 | ASSIGNED: 7 | POST: 8 | ON_QA: 1 | Verified: 2 | Clo
 
 ## Build info
 
-* Build: v20260616-c45ce9a
+* Build: v20260616-5a3d410
 
-* `git_commit_origin`: v4.1.0-11508-ge3252e2b7b
+* `git_commit_origin`: v4.1.0-11525-gaa27c3fe7e
