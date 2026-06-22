@@ -180,7 +180,7 @@ var (
 		"OCPBUGS-22382": "Won't Do confirmed",
 		"OCPBUGS-23744": "Won't Do confirmed: OLMv0 in maintenance mode",
 		"OCPBUGS-65583": "Won't Do confirmed: OLMv0 in maintenance mode",
-		"OCPBUGS-20056": "Possibly dup of  OCPBUGS-66027",
+		"OCPBUGS-20056": "Possibly dup of  OCPBUGS-66027; Rizza's comment",
 		"OCPBUGS-42837": "To be removed in 5.1",
 		"OCPBUGS-65984": "Two-Nodes clusters not fixed; Rizza's comment",
 		"OCPBUGS-64852": "Under evaluation",
