@@ -37,17 +37,20 @@ type options struct {
 }
 
 type ticketInfo struct {
-	Number         int    `json:"count"`
-	Key            string `json:"key"`
-	Summary        string `json:"summary"`
-	Status         string `json:"status"`
-	Component      string `json:"component"`
-	Resolution     string `json:"resolution"`
-	Assignee       string `json:"assignee"`
-	URL            string `json:"url"`
-	Notes          string `json:"notes"`
-	TargetVersion  string `json:"target_version"`
-	ReleaseBlocker string `json:"release_blocker"`
+	Number           int    `json:"count"`
+	Key              string `json:"key"`
+	Summary          string `json:"summary"`
+	Status           string `json:"status"`
+	Component        string `json:"component"`
+	IsPixaaComponent bool   `json:"is_pixaa_component"`
+	Resolution       string `json:"resolution"`
+	Assignee         string `json:"assignee"`
+	URL              string `json:"url"`
+	Notes            string `json:"notes"`
+	TargetVersion    string `json:"target_version"`
+	ReleaseBlocker   string `json:"release_blocker"`
+	ParentID         string `json:"parent_id,omitempty"`
+	ParentKey        string `json:"parent_key,omitempty"`
 }
 
 func gatherOptions() options {
@@ -172,20 +175,39 @@ func extractCustomField(unknowns map[string]interface{}, fieldID string) string 
 	return ""
 }
 
-var notes = map[string]string{
-	"OCPBUGS-22382": "Won't Do confirmed",
-	"OCPBUGS-23744": "Won't Do confirmed: OLMv0 in maintenance mode",
-	"OCPBUGS-65583": "Won't Do confirmed: OLMv0 in maintenance mode",
-	"OCPBUGS-20056": "Possibly dup of  OCPBUGS-66027",
-	"OCPBUGS-42837": "To be removed in 5.1",
-	"OCPBUGS-65984": "Two-Nodes clusters not fixed",
-	"OCPBUGS-64852": "Under evaluation",
-}
+var (
+	notes = map[string]string{
+		"OCPBUGS-22382": "Won't Do confirmed",
+		"OCPBUGS-23744": "Won't Do confirmed: OLMv0 in maintenance mode",
+		"OCPBUGS-65583": "Won't Do confirmed: OLMv0 in maintenance mode",
+		"OCPBUGS-20056": "Possibly dup of  OCPBUGS-66027",
+		"OCPBUGS-42837": "To be removed in 5.1",
+		"OCPBUGS-65984": "Two-Nodes clusters not fixed",
+		"OCPBUGS-64852": "Under evaluation",
+	}
+
+	pixaaComponents = sets.New[string](
+		"Cloud Compute",
+		"Cluster Autoscaler", // ?
+		"Management Console",
+		"Cloud Compute", // ?
+		"OLM",
+	)
+)
 
 const (
 	customFieldTargetVersion  = "customfield_10855"
 	customFieldReleaseBlocker = "customfield_10847"
 )
+
+func isPixaaComponent(component string) bool {
+	parts := strings.Split(component, "/")
+	if len(parts) > 0 {
+		firstPart := strings.TrimSpace(parts[0])
+		return pixaaComponents.Has(firstPart)
+	}
+	return false
+}
 
 func fetchTicketInfo(jiraClient jira.Client, ticketID string) (*ticketInfo, error) {
 	issue, err := jiraClient.GetIssue(ticketID)
@@ -203,6 +225,7 @@ func fetchTicketInfo(jiraClient jira.Client, ticketID string) (*ticketInfo, erro
 
 	if len(issue.Fields.Components) > 0 {
 		info.Component = issue.Fields.Components[0].Name
+		info.IsPixaaComponent = isPixaaComponent(info.Component)
 	}
 
 	if issue.Fields.Resolution != nil {
@@ -211,6 +234,12 @@ func fetchTicketInfo(jiraClient jira.Client, ticketID string) (*ticketInfo, erro
 
 	if issue.Fields.Assignee != nil {
 		info.Assignee = issue.Fields.Assignee.DisplayName
+	}
+
+	// Extract parent information
+	if issue.Fields.Parent != nil {
+		info.ParentID = issue.Fields.Parent.ID
+		info.ParentKey = issue.Fields.Parent.Key
 	}
 
 	// Extract custom fields
@@ -258,7 +287,7 @@ func main() {
 	ctx := context.Background()
 	jql := "issue in (linkedIssues(OTA-1643), linkedIssues(OTA-1626), linkedIssues(OTA-362), linkedIssues(TRT-1578), linkedIssues(OTA-1637)) AND project = \"OpenShift Bugs\""
 	// Currently about 70 in total
-	issues, _, err := jiraClient.SearchV2JqlWithContext(ctx, jql, &andyjira.SearchOptionsV2{MaxResults: 200, Fields: []string{"id", "key"}})
+	issues, _, err := jiraClient.SearchV2JqlWithContext(ctx, jql, &andyjira.SearchOptionsV2{MaxResults: 200, Fields: []string{"id", "key", "parent"}})
 	if err != nil {
 		logrus.WithError(err).Fatal("cannot search Jira issues")
 	}
@@ -266,7 +295,12 @@ func main() {
 
 	delta := sets.New[string](tickets...)
 	for _, issue := range issues {
-		logrus.WithField("id", issue.ID).WithField("key", issue.Key).Debug("Found issue")
+		var parentKey string
+		if issue.Fields != nil && issue.Fields.Parent != nil {
+			parentKey = issue.Fields.Parent.Key
+		}
+		logrus.WithField("id", issue.ID).WithField("key", issue.Key).WithField("parentKey", parentKey).Debug("Found issue")
+
 		delta.Delete(issue.Key)
 	}
 	if delta.Len() > 0 {
@@ -303,18 +337,26 @@ func main() {
 		// Define workflow order for status display
 		workflowOrder := []string{"New", "ASSIGNED", "POST", "ON_QA", "Verified", "Closed"}
 
-		// Count statuses
+		// Count statuses and Pixaa components
 		statusCounts := make(map[string]int)
+		pixaaCount := 0
+		pixaaNotClosedCount := 0
 
 		buf.WriteString("## OCPBugs on [jira/dashboards/22315](https://redhat.atlassian.net/jira/dashboards/22315) as exceptions in CI\n")
 
 		// Build table rows and count statuses
 		var tableRows strings.Builder
-		tableRows.WriteString("| # | Key | Summary | Status | Resolution | Target Version | Release Blocker | Component | Assignee | Notes |\n")
-		tableRows.WriteString("|---|-----|---------|--------|------------|----------------|-----------------|-----------|----------|-------|\n")
+		tableRows.WriteString("| # | Key | Summary | Status | Resolution | Target Version | Release Blocker | Component | Pixaa | Assignee | Parent | Notes |\n")
+		tableRows.WriteString("|---|-----|---------|--------|------------|----------------|-----------------|-----------|-------|----------|--------|-------|\n")
 
 		for _, ticket := range ticketInfos {
 			statusCounts[ticket.Status]++
+			if ticket.IsPixaaComponent {
+				pixaaCount++
+				if ticket.Status != "Closed" {
+					pixaaNotClosedCount++
+				}
+			}
 
 			escapedSummary := strings.ReplaceAll(ticket.Summary, "|", "\\|")
 			escapedComponent := strings.ReplaceAll(ticket.Component, "|", "\\|")
@@ -329,7 +371,17 @@ func main() {
 				keyField = fmt.Sprintf("~~%s~~", keyField)
 			}
 
-			tableRows.WriteString(fmt.Sprintf("| %d | %s | %s | %s | %s | %s | %s | %s | %s | %s |\n",
+			parentKeyField := ""
+			if ticket.ParentKey != "" {
+				parentKeyField = ticket.ParentKey
+			}
+
+			pixaaField := ""
+			if ticket.IsPixaaComponent {
+				pixaaField = "✓"
+			}
+
+			tableRows.WriteString(fmt.Sprintf("| %d | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s |\n",
 				ticket.Number,
 				keyField,
 				escapedSummary,
@@ -338,7 +390,9 @@ func main() {
 				escapedTargetVersion,
 				escapedReleaseBlocker,
 				escapedComponent,
+				pixaaField,
 				escapedAssignee,
+				parentKeyField,
 				escapedNotes))
 		}
 
@@ -346,6 +400,7 @@ func main() {
 		var summaryParts []string
 		total := len(ticketInfos)
 		summaryParts = append(summaryParts, fmt.Sprintf("Total: %d issues", total))
+		summaryParts = append(summaryParts, fmt.Sprintf("Pixaa: %d (not closed: %d)", pixaaCount, pixaaNotClosedCount))
 
 		// Add counts for statuses in workflow order
 		for _, status := range workflowOrder {
@@ -380,6 +435,15 @@ func main() {
 		// Write summary and table to buffer
 		buf.WriteString(statusSummary)
 		buf.WriteString("\n\n")
+
+		// add Pixaa aggregated info
+		buf.WriteString(fmt.Sprintf("PIXAA: open/total: %d/%d\n\n", pixaaNotClosedCount, pixaaCount))
+
+		// Add Pixaa components list
+		pixaaComponentsList := sets.List(pixaaComponents)
+		sort.Strings(pixaaComponentsList)
+		buf.WriteString(fmt.Sprintf("PIXAA components: %s\n\n", strings.Join(pixaaComponentsList, ", ")))
+
 		buf.WriteString(tableRows.String())
 
 		output = buf.String()
