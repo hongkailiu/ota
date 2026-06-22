@@ -7,7 +7,7 @@ PIXAA components: Cloud Compute, Cluster Autoscaler, Management Console, OLM
 
 | # | Key | Summary | Status | Resolution | Target Version | Release Blocker | Component | Pixaa | Assignee | Parent | Notes |
 |---|-----|---------|--------|------------|----------------|-----------------|-----------|-------|----------|--------|-------|
-| 0 | [OCPBUGS-20056](https://redhat.atlassian.net/browse/OCPBUGS-20056) | Single short-lived operand blip shouldn't cause authentication operator Available=False | POST |  | 4.22.0 | Rejected | apiserver-auth |  | Ondra Kupka |  | Possibly dup of  OCPBUGS-66027 |
+| 0 | [OCPBUGS-20056](https://redhat.atlassian.net/browse/OCPBUGS-20056) | Single short-lived operand blip shouldn't cause authentication operator Available=False | POST |  | 4.22.0 | Rejected | apiserver-auth |  | Ondra Kupka |  | Possibly dup of  OCPBUGS-66027; Rizza's comment |
 | 1 | ~~[OCPBUGS-22382](https://redhat.atlassian.net/browse/OCPBUGS-22382)~~ | Image registry experiencing disruption during vSphere serial jobs | Closed | Won't Do |  | Rejected | Image Registry |  | Flavian Missi | IR-532 | Won't Do confirmed |
 | 2 | ~~[OCPBUGS-23744](https://redhat.atlassian.net/browse/OCPBUGS-23744)~~ | operator-lifecycle-manager-packageserver ClusterOperator should not blip Available=False on 4.14 to 4.15 updates | Closed | Done-Errata | 4.16.0 | Rejected | OLM | ✓ | Kevin Rizza | OPRUN-4185 | Won't Do confirmed: OLMv0 in maintenance mode |
 | 3 | [OCPBUGS-23746](https://redhat.atlassian.net/browse/OCPBUGS-23746) | openshift-apiserver ClusterOperator should not blip Available=False on brief missing HTTP content-type | POST |  | 4.22.0 | Rejected | openshift-apiserver |  | Ondra Kupka |  | Rizza's comment |
@@ -40,6 +40,6 @@ PIXAA components: Cloud Compute, Cluster Autoscaler, Management Console, OLM
 
 ## Build info
 
-* Build: v20260622-475256d-dirty
+* Build: v20260622-c122f2a
 
 * `git_commit_origin`: v4.1.0-11541-gced5d7e360
