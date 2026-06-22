@@ -182,8 +182,20 @@ var (
 		"OCPBUGS-65583": "Won't Do confirmed: OLMv0 in maintenance mode",
 		"OCPBUGS-20056": "Possibly dup of  OCPBUGS-66027",
 		"OCPBUGS-42837": "To be removed in 5.1",
-		"OCPBUGS-65984": "Two-Nodes clusters not fixed",
+		"OCPBUGS-65984": "Two-Nodes clusters not fixed; Rizza's comment",
 		"OCPBUGS-64852": "Under evaluation",
+		"OCPBUGS-86308": "Rizza's comment",
+		"OCPBUGS-38661": "Rizza's comment",
+		"OCPBUGS-23746": "Rizza's comment",
+		"OCPBUGS-62633": "Rizza's comment",
+		"OCPBUGS-66213": "Rizza's comment",
+		"OCPBUGS-38662": "Rizza's comment",
+		"OCPBUGS-65896": "Rizza's comment",
+		"OCPBUGS-63116": "Rizza's comment",
+		"OCPBUGS-38678": "Rizza's comment",
+		"OCPBUGS-38663": "Rizza's comment",
+		"OCPBUGS-66027": "Rizza's comment",
+		"OCPBUGS-62629": "Rizza's comment",
 	}
 
 	pixaaComponents = sets.New[string](
