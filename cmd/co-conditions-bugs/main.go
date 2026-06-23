@@ -192,9 +192,9 @@ var (
 		"OCPBUGS-38662": "Descoped",
 		"OCPBUGS-65896": "Descoped",
 		"OCPBUGS-63116": "Descoped",
-		"OCPBUGS-38678": "Descoped",
+		"OCPBUGS-38678": "Descoped", // not an exception in o/origin
 		"OCPBUGS-38663": "Descoped",
-		"OCPBUGS-66027": "Descoped",
+		"OCPBUGS-66027": "Descoped", // not an exception in o/origin
 		"OCPBUGS-62629": "Descoped",
 		"OCPBUGS-66225": "Under evaluation",
 		"OCPBUGS-65647": "Won't Do confirmed",
@@ -351,6 +351,61 @@ func main() {
 		// Define workflow order for status display
 		workflowOrder := []string{"New", "ASSIGNED", "POST", "ON_QA", "Verified", "Closed"}
 
+		// Filter out descoped/won't-do tickets and track them separately
+		var activeTickets []*ticketInfo
+		var descopedTickets []string
+		var descopedTicketKeys []string // Track keys for deduplication
+		var wontDoTickets []string
+
+		for _, ticket := range ticketInfos {
+			linkedKey := fmt.Sprintf("[%s](%s)", ticket.Key, ticket.URL)
+			if strings.Contains(ticket.Notes, "Won't Do confirmed") {
+				wontDoTickets = append(wontDoTickets, linkedKey)
+			} else if strings.Contains(ticket.Notes, "Descoped") {
+				descopedTickets = append(descopedTickets, linkedKey)
+				descopedTicketKeys = append(descopedTicketKeys, ticket.Key)
+			} else {
+				activeTickets = append(activeTickets, ticket)
+			}
+		}
+
+		// Find other descoped bugs from notes map that aren't in descopedTickets
+		var descopedOthers []string
+		for key, note := range notes {
+			if strings.Contains(note, "Descoped") {
+				// Check if this key is not already in descopedTicketKeys
+				found := false
+				for _, dk := range descopedTicketKeys {
+					if key == dk {
+						found = true
+						break
+					}
+				}
+				if !found {
+					// Try to find the URL for this ticket in ticketInfos
+					ticketFound := false
+					for _, ticket := range ticketInfos {
+						if ticket.Key == key {
+							linkedKey := fmt.Sprintf("[%s](%s)", ticket.Key, ticket.URL)
+							descopedOthers = append(descopedOthers, linkedKey)
+							ticketFound = true
+							break
+						}
+					}
+					// If ticket not in ticketInfos (not found in source files), construct URL manually
+					if !ticketFound {
+						linkedKey := fmt.Sprintf("[%s](https://redhat.atlassian.net/browse/%s)", key, key)
+						descopedOthers = append(descopedOthers, linkedKey)
+					}
+				}
+			}
+		}
+
+		// Renumber active tickets
+		for i := range activeTickets {
+			activeTickets[i].Number = i
+		}
+
 		// Count statuses and Pixaa components
 		statusCounts := make(map[string]int)
 		pixaaCount := 0
@@ -363,7 +418,7 @@ func main() {
 		tableRows.WriteString("| # | Key | Summary | Status | Resolution | Target Version | Release Blocker | Component | Pixaa | Assignee | Parent | Notes |\n")
 		tableRows.WriteString("|---|-----|---------|--------|------------|----------------|-----------------|-----------|-------|----------|--------|-------|\n")
 
-		for _, ticket := range ticketInfos {
+		for _, ticket := range activeTickets {
 			statusCounts[ticket.Status]++
 			if ticket.IsPixaaComponent {
 				pixaaCount++
@@ -412,7 +467,7 @@ func main() {
 
 		// Generate status summary
 		var summaryParts []string
-		total := len(ticketInfos)
+		total := len(activeTickets)
 		summaryParts = append(summaryParts, fmt.Sprintf("Total: %d issues", total))
 		summaryParts = append(summaryParts, fmt.Sprintf("Pixaa: %d (not closed: %d)", pixaaCount, pixaaNotClosedCount))
 
@@ -457,6 +512,20 @@ func main() {
 		pixaaComponentsList := sets.List(pixaaComponents)
 		sort.Strings(pixaaComponentsList)
 		buf.WriteString(fmt.Sprintf("PIXAA components: %s\n\n", strings.Join(pixaaComponentsList, ", ")))
+
+		if len(descopedTickets) > 0 {
+			buf.WriteString(fmt.Sprintf("Descoped (not in table): %d issues - %s\n\n", len(descopedTickets), strings.Join(descopedTickets, ", ")))
+		}
+
+		if len(descopedOthers) > 0 {
+			buf.WriteString(fmt.Sprintf("Descoped (others): %d issues - %s\n\n", len(descopedOthers), strings.Join(descopedOthers, ", ")))
+		} else {
+			buf.WriteString("Descoped (others): 0 issues\n\n")
+		}
+
+		if len(wontDoTickets) > 0 {
+			buf.WriteString(fmt.Sprintf("Won't Do: %d issues - %s\n\n", len(wontDoTickets), strings.Join(wontDoTickets, ", ")))
+		}
 
 		buf.WriteString(tableRows.String())
 
