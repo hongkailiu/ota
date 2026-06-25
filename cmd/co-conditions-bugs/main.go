@@ -198,6 +198,8 @@ var (
 		"OCPBUGS-62629": "Descoped",
 		"OCPBUGS-66225": "Under evaluation",
 		"OCPBUGS-65647": "Won't Do confirmed",
+		"OCPBUGS-25739": "To be removed in 5.1",
+		"OCPBUGS-45921": "To be removed in 5.0",
 	}
 
 	pixaaComponents = sets.New[string](
