@@ -198,7 +198,7 @@ var (
 		"OCPBUGS-62629": "Descoped",
 		"OCPBUGS-66225": "Under evaluation",
 		"OCPBUGS-65647": "Won't Do confirmed",
-		"OCPBUGS-25739": "To be removed in 5.1", // https://github.com/openshift/origin/pull/31345
+		"OCPBUGS-25739": "origin#31345", // https://github.com/openshift/origin/pull/31345
 		"OCPBUGS-45921": "Can be removed in 5.0",
 		"OCPBUGS-92835": "dup of OCPBUGS-25739",
 	}
