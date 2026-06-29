@@ -204,6 +204,8 @@ var (
 		"OCPBUGS-38676": "origin#31280",
 		"OCPBUGS-64688": "origin#31280, dup of OCPBUGS-93982",
 		"OCPBUGS-93982": "dup of OCPBUGS-64688",
+		"OCPBUGS-85677": "origin#31350, dup of OCPBUGS-90541",
+		"OCPBUGS-90541": "origin#31350, dup of OCPBUGS-85677",
 	}
 
 	pixaaComponents = sets.New[string](
