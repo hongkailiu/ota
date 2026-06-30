@@ -204,8 +204,8 @@ var (
 		"OCPBUGS-38676": "origin#31280",
 		"OCPBUGS-64688": "origin#31280, dup of OCPBUGS-93982",
 		"OCPBUGS-93982": "dup of OCPBUGS-64688",
-		"OCPBUGS-85677": "origin#31350, dup of OCPBUGS-90541",
-		"OCPBUGS-90541": "origin#31350, dup of OCPBUGS-85677",
+		"OCPBUGS-85677": "To be removed in 5.1",
+		"OCPBUGS-90541": "Progressing=False",
 	}
 
 	pixaaComponents = sets.New[string](
@@ -214,6 +214,27 @@ var (
 		"Management Console",
 		"Cloud Compute", // ?
 		"OLM",
+	)
+
+	specificBugsInOCPSTRAT2949 = sets.New[string](
+		"OCPBUGS-66101",
+		"OCPBUGS-42837",
+		"OCPBUGS-64688",
+		"OCPBUGS-38676",
+		"OCPBUGS-67134",
+		"OCPBUGS-86009",
+		"OCPBUGS-82160",
+		"OCPBUGS-86017",
+		"OCPBUGS-66225",
+		"OCPBUGS-25739",
+		//"OCPBUGS-45921", // removed by https://github.com/openshift/origin/pull/31346
+		"OCPBUGS-62627",
+		"OCPBUGS-85677",
+		//"OCPBUGS-65647", // "Won't Do confirmed",
+	)
+
+	additionalBugs = sets.New[string](
+		"OCPBUGS-90541",
 	)
 )
 
@@ -293,6 +314,10 @@ func main() {
 
 	tickets := parseJiraTickets(content)
 	logrus.Infof("Found %d unique Jira tickets", len(tickets))
+
+	// Append additional bugs
+	tickets = append(tickets, sets.List(additionalBugs)...)
+	logrus.Infof("After adding additionalBugs: %d unique Jira tickets", len(tickets))
 
 	if len(tickets) == 0 {
 		logrus.Info("No Jira tickets found")
@@ -412,6 +437,16 @@ func main() {
 		// Renumber active tickets
 		for i := range activeTickets {
 			activeTickets[i].Number = i
+		}
+
+		// Check that all bugs in specificBugsInOCPSTRAT2949 are in the active table
+		activeTicketKeys := sets.New[string]()
+		for _, ticket := range activeTickets {
+			activeTicketKeys.Insert(ticket.Key)
+		}
+		missingBugs := specificBugsInOCPSTRAT2949.Difference(activeTicketKeys)
+		if missingBugs.Len() > 0 {
+			logrus.WithField("missing", sets.List(missingBugs)).Fatal("Bugs from specificBugsInOCPSTRAT2949 are not in the markdown table")
 		}
 
 		// Count statuses and Pixaa components
