@@ -234,7 +234,7 @@ var (
 	)
 
 	additionalBugs = sets.New[string](
-		"OCPBUGS-90541",
+	// "OCPBUGS-90541", waiting for the decision
 	)
 )
 
