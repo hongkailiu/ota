@@ -206,6 +206,8 @@ var (
 		"OCPBUGS-93982": "dup of OCPBUGS-64688",
 		"OCPBUGS-85677": "To be removed in 5.1",
 		"OCPBUGS-90541": "Progressing=False",
+		"OCPBUGS-67134": "To be removed in 5.1",
+		"OCPBUGS-66101": "Under evaluation",
 	}
 
 	pixaaComponents = sets.New[string](
