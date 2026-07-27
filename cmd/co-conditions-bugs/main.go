@@ -202,7 +202,7 @@ var (
 		"OCPBUGS-45921": "Can be removed in 5.0",
 		"OCPBUGS-92835": "dup of OCPBUGS-25739",
 		"OCPBUGS-38676": "origin#31280",
-		"OCPBUGS-64688": "origin#31280, dup of OCPBUGS-93982",
+		"OCPBUGS-64688": "Under evaluation, origin#31280, dup of OCPBUGS-93982",
 		"OCPBUGS-93982": "dup of OCPBUGS-64688",
 		"OCPBUGS-85677": "To be removed in 5.1",
 		"OCPBUGS-90541": "Progressing=False",
