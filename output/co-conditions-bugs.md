@@ -1,5 +1,5 @@
 ## OCPBugs on [jira/dashboards/22315](https://redhat.atlassian.net/jira/dashboards/22315) as exceptions in CI
-Total: 13 issues | Pixaa: 5 (not closed: 5) | New: 1 | ASSIGNED: 2 | POST: 2 | ON_QA: 1 | Verified: 6 | Closed: 1
+Total: 13 issues | Pixaa: 5 (not closed: 5) | New: 1 | ASSIGNED: 2 | POST: 2 | Verified: 7 | Closed: 1
 
 PIXAA: open/total: 5/5
 
@@ -17,7 +17,7 @@ Won't Do: 4 issues - [OCPBUGS-22382](https://redhat.atlassian.net/browse/OCPBUGS
 | 1 | [OCPBUGS-38676](https://redhat.atlassian.net/browse/OCPBUGS-38676) | clusteroperator/console blips Degraded=True during CI job run | Verified |  | 5.0.0 | Rejected | Management Console | ✓ | Steve Goodwin | CONSOLE-5185 | origin#31280 |
 | 2 | [OCPBUGS-42837](https://redhat.atlassian.net/browse/OCPBUGS-42837) | clusteroperator/cloud-controller-manager blips Degraded=True during upgrade test | Verified |  | 5.0.0 | Rejected | Cloud Compute / Cloud Controller Manager | ✓ | Nolan Brubaker | OCPCLOUD-3420 | To be removed in 5.1 |
 | 3 | [OCPBUGS-62627](https://redhat.atlassian.net/browse/OCPBUGS-62627) | cluster operator ingress reported Progressing=True with reason=Reconciling for a node reboot | New |  | 4.22.0 | Rejected | Networking / router |  | Davide Salerno | NE-2267 |  |
-| 4 | [OCPBUGS-64688](https://redhat.atlassian.net/browse/OCPBUGS-64688) | cluster operator console reported Progressing=True with reason= SyncLoopRefresh_InProgress for a node reboot | ON_QA |  | 5.0.0 |  | Management Console | ✓ | Steve Goodwin | CONSOLE-5185 | origin#31280, dup of OCPBUGS-93982 |
+| 4 | [OCPBUGS-64688](https://redhat.atlassian.net/browse/OCPBUGS-64688) | cluster operator console reported Progressing=True with reason= SyncLoopRefresh_InProgress for a node reboot | Verified |  | 5.0.0 |  | Management Console | ✓ | Steve Goodwin | CONSOLE-5185 | Under evaluation, origin#31280, dup of OCPBUGS-93982 |
 | 5 | [OCPBUGS-64852](https://redhat.atlassian.net/browse/OCPBUGS-64852) | Cluster Operator cloud-controller-manager did not report Progressing=True during a cluster update | Verified |  | 5.0.0 |  | Cloud Compute / Cloud Controller Manager | ✓ | Theo Barber-Bany | OCPCLOUD-3420 | Under evaluation |
 | 6 | [OCPBUGS-66101](https://redhat.atlassian.net/browse/OCPBUGS-66101) | Cluster Operator baremetal did not report Progressing=True during a cluster update | Verified |  | 5.0.0 | Approved | Bare Metal Hardware Provisioning |  | Honza Pokorny |  | Under evaluation |
 | 7 | [OCPBUGS-66225](https://redhat.atlassian.net/browse/OCPBUGS-66225) | clusteroperator/image-registry blips Degraded=True during upgrade test | Verified |  | 5.0.0 | Approved | Image Registry |  | Ilias Rinis |  | Under evaluation |
@@ -29,6 +29,6 @@ Won't Do: 4 issues - [OCPBUGS-22382](https://redhat.atlassian.net/browse/OCPBUGS
 
 ## Build info
 
-* Build: v20260720-fba4547
+* Build: v20260727-d240331
 
-* `git_commit_origin`: v4.1.0-11675-g079470ec75
+* `git_commit_origin`: v4.1.0-11730-g0c1e165773
