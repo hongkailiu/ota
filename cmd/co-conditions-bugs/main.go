@@ -200,7 +200,7 @@ var (
 		"OCPBUGS-65647": "Won't Do confirmed",
 		"OCPBUGS-25739": "origin#31345, dup of OCPBUGS-92835",
 		"OCPBUGS-45921": "Can be removed in 5.0",
-		"OCPBUGS-92835": "dup of OCPBUGS-25739",
+		"OCPBUGS-92835": "origin#31345, dup of OCPBUGS-25739",
 		"OCPBUGS-38676": "origin#31280",
 		"OCPBUGS-64688": "Under evaluation, origin#31280, dup of OCPBUGS-93982",
 		"OCPBUGS-93982": "dup of OCPBUGS-64688",
@@ -228,7 +228,7 @@ var (
 		"OCPBUGS-82160",
 		"OCPBUGS-86017",
 		"OCPBUGS-66225",
-		"OCPBUGS-25739",
+		//"OCPBUGS-25739", // replaced by OCPBUGS-92835 via https://github.com/openshift/origin/pull/31345
 		//"OCPBUGS-45921", // removed by https://github.com/openshift/origin/pull/31346
 		"OCPBUGS-62627",
 		"OCPBUGS-85677",
